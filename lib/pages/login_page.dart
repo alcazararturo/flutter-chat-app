@@ -1,4 +1,7 @@
+import 'package:chat/helpers/mostrar_alerta.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:chat/services/auth_service.dart';
 import 'package:chat/widgets/custom_input.dart';
 import 'package:chat/widgets/custom_logo.dart';
 import 'package:chat/widgets/custom_label.dart';
@@ -44,6 +47,7 @@ class __FormState extends State<_Form> {
   final passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -64,13 +68,20 @@ class __FormState extends State<_Form> {
           ),
           CustomButton(
             text: 'Ingresar',
-            onPressed: () {
-              Map<String, String> user = {
-                'email': emailController.text,
-                'password': passwordController.text
-              };
-              print(user);
-            },
+            onPressed: authService.autenticando
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final loginOk = await authService.login(
+                        emailController.text.trim(),
+                        passwordController.text.trim());
+                    if (loginOk) {
+                      Navigator.pushReplacementNamed(context, 'usuarios');
+                    } else {
+                      mostrarAlerta(context, 'Error en credenciales',
+                          'Revise sus credenciales');
+                    }
+                  },
           ),
         ],
       ),

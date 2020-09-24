@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
+
 import 'package:chat/models/usuario.dart';
+import 'package:chat/services/auth_service.dart';
 
 class UsuariosPage extends StatefulWidget {
   @override
@@ -15,31 +18,35 @@ class _UsuariosPageState extends State<UsuariosPage> {
         uid: '1',
         name: 'Rocío',
         email: 'rociomm1110@hotmail.com',
-        online: true),
+        onLine: true),
     Usuario(
-        uid: '2', name: 'Paula', email: 'paulasr@hotmail.com', online: true),
+        uid: '2', name: 'Paula', email: 'paulasr@hotmail.com', onLine: true),
     Usuario(
         uid: '3',
         name: 'Arturo',
         email: 'alcazararturo@hotmail.com',
-        online: true),
+        onLine: true),
     Usuario(
         uid: '4',
         name: 'Sandra',
         email: 'sandraperez@hotmail.com',
-        online: false),
+        onLine: false),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final userName = Provider.of<AuthService>(context).userName;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Mi nombre', style: TextStyle(color: Colors.black87)),
+          title: Text(userName, style: TextStyle(color: Colors.black87)),
           elevation: 1,
           backgroundColor: Colors.white,
           leading: IconButton(
             icon: Icon(Icons.exit_to_app, color: Colors.black87),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, 'login');
+              AuthService.deleteToken();
+            },
           ),
           actions: <Widget>[
             Container(
@@ -80,7 +87,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
         width: 10,
         height: 10,
         decoration: BoxDecoration(
-          color: usuario.online ? Colors.green[300] : Colors.red,
+          color: usuario.onLine ? Colors.green[300] : Colors.red,
           borderRadius: BorderRadius.circular(100),
         ),
       ),

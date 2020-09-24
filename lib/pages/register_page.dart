@@ -1,8 +1,12 @@
+import 'package:chat/helpers/mostrar_alerta.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
 import 'package:chat/widgets/custom_input.dart';
 import 'package:chat/widgets/custom_logo.dart';
 import 'package:chat/widgets/custom_label.dart';
 import 'package:chat/widgets/custom_button.dart';
+import 'package:chat/services/auth_service.dart';
 
 class RegisterPage extends StatelessWidget {
   @override
@@ -45,6 +49,7 @@ class __FormState extends State<_Form> {
   final passwordController = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 10),
       padding: EdgeInsets.symmetric(horizontal: 35),
@@ -71,15 +76,22 @@ class __FormState extends State<_Form> {
             isPassword: true,
           ),
           CustomButton(
-            text: 'Ingresar',
-            onPressed: () {
-              Map<String, String> user = {
-                'name': namelController.text,
-                'email': emailController.text,
-                'password': passwordController.text
-              };
-              print(user);
-            },
+            text: 'Crear cuenta',
+            onPressed: authService.autenticando
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final loginOk = await authService.register(
+                        namelController.text.trim(),
+                        emailController.text.trim(),
+                        passwordController.text.trim());
+                    if (loginOk == 'ok') {
+                      Navigator.pushReplacementNamed(context, 'usuarios');
+                    } else {
+                      mostrarAlerta(
+                          context, 'Error', loginOk.trim() );
+                    }
+                  },
           ),
         ],
       ),
