@@ -10,27 +10,27 @@ String usuarioToJson(Usuario data) => json.encode(data.toJson());
 
 class Usuario {
   Usuario({
-    this.onLine,
-    this.name,
+    this.online,
+    this.nombre,
     this.email,
     this.uid,
   });
 
-  bool onLine;
-  String name;
+  bool online;
+  String nombre;
   String email;
   String uid;
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
-        onLine: json["onLine"],
-        name: json["name"],
+        online: json["online"],
+        nombre: json["nombre"],
         email: json["email"],
         uid: json["uid"],
       );
 
   Map<String, dynamic> toJson() => {
-        "onLine": onLine,
-        "name": name,
+        "online": online,
+        "nombre": nombre,
         "email": email,
         "uid": uid,
       };

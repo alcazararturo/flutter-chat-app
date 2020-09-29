@@ -12,11 +12,10 @@ mostrarAlerta(BuildContext context, String titulo, String subtitulo) {
               content: Text(subtitulo),
               actions: <Widget>[
                 MaterialButton(
-                  child: Text('OK'),
-                  elevation: 5,
-                  textColor: Colors.blue,
-                  onPressed: () => Navigator.pop(context),
-                )
+                    child: Text('Ok'),
+                    elevation: 5,
+                    textColor: Colors.blue,
+                    onPressed: () => Navigator.pop(context))
               ],
             ));
   }
@@ -24,13 +23,14 @@ mostrarAlerta(BuildContext context, String titulo, String subtitulo) {
   showCupertinoDialog(
       context: context,
       builder: (_) => CupertinoAlertDialog(
-              title: Text(titulo),
-              content: Text(subtitulo),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                  isDefaultAction: true,
-                  child: Text('Ok'),
-                  onPressed: () => Navigator.pop(context),
-                )
-              ]));
+            title: Text(titulo),
+            content: Text(subtitulo),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                isDefaultAction: true,
+                child: Text('Ok'),
+                onPressed: () => Navigator.pop(context),
+              )
+            ],
+          ));
 }

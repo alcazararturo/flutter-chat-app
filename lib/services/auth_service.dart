@@ -1,24 +1,27 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:chat/global/environment.dart';
+
 import 'package:chat/models/login_response.dart';
 import 'package:chat/models/usuario.dart';
 
 class AuthService with ChangeNotifier {
   Usuario usuario;
-  bool _autenticado = false;
+  bool _autenticando = false;
+
   final _storage = new FlutterSecureStorage();
-  bool get autenticando => this._autenticado;
+
+  bool get autenticando => this._autenticando;
   set autenticando(bool valor) {
-    this._autenticado = valor;
+    this._autenticando = valor;
     notifyListeners();
   }
 
-  String get userName => usuario.name;
-
+  // Getters del token de forma estática
   static Future<String> getToken() async {
     final _storage = new FlutterSecureStorage();
     final token = await _storage.read(key: 'token');
@@ -32,33 +35,42 @@ class AuthService with ChangeNotifier {
 
   Future<bool> login(String email, String password) async {
     this.autenticando = true;
+
     final data = {'email': email, 'password': password};
-    final resp = await http.post('${Evironment.apiUrl}/login',
+
+    final resp = await http.post('${Environment.apiUrl}/login',
         body: jsonEncode(data), headers: {'Content-Type': 'application/json'});
-    print(resp.body);
+
     this.autenticando = false;
+
     if (resp.statusCode == 200) {
       final loginResponse = loginResponseFromJson(resp.body);
       this.usuario = loginResponse.usuario;
+
       await this._guardarToken(loginResponse.token);
+
       return true;
     } else {
       return false;
     }
   }
 
-  Future<String> register(String name, String email, String password) async {
+  Future register(String nombre, String email, String password) async {
     this.autenticando = true;
-    final data = {'name': name, 'email': email, 'password': password};
-    final resp = await http.post('${Evironment.apiUrl}/login/new',
+
+    final data = {'nombre': nombre, 'email': email, 'password': password};
+
+    final resp = await http.post('${Environment.apiUrl}/login/new',
         body: jsonEncode(data), headers: {'Content-Type': 'application/json'});
-    print(resp.body);
+
     this.autenticando = false;
+
     if (resp.statusCode == 200) {
       final loginResponse = loginResponseFromJson(resp.body);
       this.usuario = loginResponse.usuario;
       await this._guardarToken(loginResponse.token);
-      return 'ok';
+
+      return true;
     } else {
       final respBody = jsonDecode(resp.body);
       return respBody['msg'];
@@ -67,10 +79,10 @@ class AuthService with ChangeNotifier {
 
   Future<bool> isLoggedIn() async {
     final token = await this._storage.read(key: 'token');
-    final resp = await http.post('${Evironment.apiUrl}/login/renew',
+
+    final resp = await http.get('${Environment.apiUrl}/login/renew',
         headers: {'Content-Type': 'application/json', 'x-token': token});
-    print(resp.body);
-    this.autenticando = false;
+
     if (resp.statusCode == 200) {
       final loginResponse = loginResponseFromJson(resp.body);
       this.usuario = loginResponse.usuario;
